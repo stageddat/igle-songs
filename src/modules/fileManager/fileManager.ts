@@ -9,6 +9,8 @@ import { isDiskAlmostFull } from "./checkDiskUsage";
 const pptxsDir = path.join(process.cwd(), "/data/pptxs");
 const pdfsDir = path.join(process.cwd(), "/data/pdfs");
 const pngsDir = path.join(process.cwd(), "/data/pngs");
+// fuera de pngsDir para que no aparezca como cancion en revision
+const tempDir = path.join(process.cwd(), "/data/tmp");
 
 const CONCURRENCY_LIMIT = 3;
 
@@ -86,7 +88,7 @@ export async function processFiles() {
     }
 
     // crear subcarpeta temp específica por archivo pdf
-    const tempPngDir = path.join(pngsDir, "temp", baseName);
+    const tempPngDir = path.join(tempDir, baseName);
     const pngImages = await convertPdfToPng(pdfFile, tempPngDir);
 
     if (pngImages.length === 0) {
