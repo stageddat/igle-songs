@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import MasterDetailLayout from "@/components/layout/MasterDetailLayout"
@@ -9,9 +9,11 @@ import ImageGallery from "@/components/ImageGallery"
 import { useMobileView } from "@/hooks/useMobileView"
 import SongList from "@/components/SongList"
 import { useTranslations } from 'next-intl';
+import type { SongListItem } from "@/lib/songSearch"
 
 export default function SongPage() {
-	const [songs, setSongs] = useState<string[]>([])
+	const [songs, setSongs] = useState<SongListItem[]>([])
+	const songNames = useMemo(() => new Set(songs.map((song) => song.name)), [songs])
 	const [searchTerm, setSearchTerm] = useState("")
 	const [selectedSong, setSelectedSong] = useState<string | null>(null)
 	const [images, setImages] = useState<string[]>([])
@@ -26,14 +28,14 @@ export default function SongPage() {
 		if (!songsLoaded) {
 			fetch("/api/songs")
 				.then((res) => res.json())
-				.then((data) => {
+				.then((data: SongListItem[]) => {
 					setSongs(data)
 					setSongsLoaded(true)
 
 					const urlSong = searchParams.get('song')
 					if (urlSong) {
 						const decodedSong = decodeURIComponent(urlSong)
-						if (data.includes(decodedSong)) {
+						if (data.some((song) => song.name === decodedSong)) {
 							setSelectedSong(decodedSong)
 						} else {
 							router.replace('/songs')
@@ -127,7 +129,7 @@ export default function SongPage() {
 	}
 
 	const handleSongSelect = useCallback((title: string) => {
-		if (!songs.includes(title)) {
+		if (!songNames.has(title)) {
 			toast.error(t("songNotFound"))
 			return
 		}
@@ -135,7 +137,7 @@ export default function SongPage() {
 		setSelectedSong(title)
 
 		router.replace(`/songs?song=${encodeURIComponent(title)}`, { scroll: false })
-	}, [songs, router, t])
+	}, [songNames, router, t])
 
 	const handleBackToList = useCallback(() => {
 		setSelectedSong(null)
@@ -149,7 +151,7 @@ export default function SongPage() {
 
 			if (urlSong) {
 				const decodedSong = decodeURIComponent(urlSong)
-				if (songs.includes(decodedSong)) {
+				if (songNames.has(decodedSong)) {
 					setSelectedSong(decodedSong)
 				} else if (songsLoaded) {
 					router.replace('/songs')
@@ -165,7 +167,7 @@ export default function SongPage() {
 
 		window.addEventListener('popstate', handleRouteChange)
 		return () => window.removeEventListener('popstate', handleRouteChange)
-	}, [songs, songsLoaded, router])
+	}, [songNames, songsLoaded, router])
 
 	const songListComponent = (
 		<SongList

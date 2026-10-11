@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { motion, AnimatePresence } from "framer-motion"
 import { useTranslations } from 'next-intl';
+import { matchesSong, normalizeSearch, type SongListItem } from "@/lib/songSearch"
 
 interface SongListProps {
-	songs: string[]
+	songs: SongListItem[]
 	searchTerm: string
 	onSearchChange: (value: string) => void
 	selectedSong: string | null
@@ -28,9 +29,9 @@ export default function SongList({
 }: SongListProps) {
 	const t = useTranslations()
 
-	const filteredSongs = songs.filter(song =>
-		song.toLowerCase().includes(searchTerm.toLowerCase())
-	)
+	// busca por caracteres, pinyin ("yesu") o iniciales ("yslw")
+	const query = normalizeSearch(searchTerm)
+	const filteredSongs = songs.filter(song => matchesSong(song, query))
 
 	const headerClass = isMobile ? "p-4" : "p-6"
 	const contentClass = isMobile ? "p-4" : "p-6"
@@ -59,7 +60,7 @@ export default function SongList({
 						transition={{ duration: 0.4 }}
 					>
 						<AnimatePresence>
-							{filteredSongs.map((title) => (
+							{filteredSongs.map(({ name: title }) => (
 								<motion.div
 									key={title}
 									initial={{ opacity: 0, y: 10 }}

@@ -38,7 +38,7 @@ export default function Navbar() {
 		{ code: "es" as Locale, name: "Español" },
 		{ code: "en" as Locale, name: "English" },
 		{ code: "ca" as Locale, name: "Català" },
-		{ code: "ch" as Locale, name: "中文" },
+		{ code: "zh" as Locale, name: "中文" },
 	];
 
 	const handleLanguageChange = (newLocale: Locale) => {
