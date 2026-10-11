@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { getSongsDb } from "@/modules/db/songsDb";
+import { buildSongIndex } from "@/modules/songs/songIndex";
 
 export async function GET() {
   try {
     const db = await getSongsDb();
-    return NextResponse.json(Object.keys(db.songs));
+    return NextResponse.json(buildSongIndex(Object.keys(db.songs)));
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("error reading songs db:", error.message);
