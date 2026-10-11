@@ -1,8 +1,9 @@
-import { exec } from "child_process";
+import { execFile } from "child_process";
 
-export async function execCmd(cmd: string) {
+// ejecutar sin shell: los argumentos se pasan tal cual y no se interpretan
+export async function execCmd(file: string, args: string[]) {
 	return new Promise((resolve, reject) => {
-		exec(cmd, (err, stdout, stderr) => {
+		execFile(file, args, (err, stdout, stderr) => {
 			if (err) reject({ err, stderr });
 			else resolve({ stdout, stderr });
 		});
