@@ -4,13 +4,12 @@ import { r2 } from "@/r2";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
 import { isSafeName, safeJoin } from "@/modules/shared/safePath";
+import { getSongsDb, updateSongsDb } from "@/modules/db/songsDb";
 
 dotenv.config();
 
 export async function uploadSlides(songName: string, slides: string[]) {
-  const songsDbPath = path.join(process.cwd(), "data", "songs.json");
-  const songsDbContent = await fs.readFile(songsDbPath, "utf-8");
-  const songsDb = JSON.parse(songsDbContent);
+  const songsDb = await getSongsDb();
   const pngsDir = path.join(process.cwd(), "/data/pngs");
   const songDir = safeJoin(pngsDir, songName);
   if (!songDir || !slides.every(isSafeName)) {
@@ -24,7 +23,7 @@ export async function uploadSlides(songName: string, slides: string[]) {
   let counter = 2;
 
   // verificar si ya existe cancion
-  while (songsDb.songs && songsDb.songs[finalSongName]) {
+  while (songsDb.songs[finalSongName]) {
     finalSongName = `${songName}-${counter}`;
     counter++;
   }
@@ -85,27 +84,23 @@ export async function uploadSlides(songName: string, slides: string[]) {
 
   console.log(uploadedLinks);
 
-  const nowDate = new Date().toISOString();
+  await updateSongsDb(`feat(songs): add ${finalSongName}`, (db) => {
+    // otra subida ha usado el mismo nombre mientras subíamos: no pisarla
+    if (db.songs[finalSongName]) {
+      throw new Error(`song "${finalSongName}" was added while uploading`);
+    }
 
-  const updatedSongs = {
-    ...songsDb.songs,
-    [finalSongName]: {
-      links: uploadedLinks,
-      uploadDate: nowDate,
-    },
-  };
-
-  const newSongDb = {
-    ...songsDb,
-    updateDate: nowDate,
-    songs: updatedSongs,
-  };
-
-  await fs.writeFile(
-    path.join(process.cwd(), "data", "songs.json"),
-    JSON.stringify(newSongDb, null, 2),
-    "utf-8"
-  );
+    return {
+      ...db,
+      songs: {
+        ...db.songs,
+        [finalSongName]: {
+          links: uploadedLinks,
+          uploadDate: new Date().toISOString(),
+        },
+      },
+    };
+  });
 
   // borrar carpeta temporal
   await fs.rm(songDir, { recursive: true, force: true });

@@ -40,8 +40,8 @@ WORKDIR /app
 
 COPY --from=build --chown=node:node /app/.next/standalone ./
 COPY --from=build --chown=node:node /app/.next/static ./.next/static
-# base de datos inicial; en producción se monta ./data como volumen
-COPY --chown=node:node data/songs.json ./data/songs.json
+# carpeta para archivos en proceso; en producción se monta ./data como volumen
+RUN mkdir data && chown node:node data
 
 USER node
 EXPOSE 9999

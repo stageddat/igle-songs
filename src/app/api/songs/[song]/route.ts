@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import path from "path";
-import { promises as fs } from "fs";
+import { getSongsDb } from "@/modules/db/songsDb";
 
 export async function GET(
   request: Request,
@@ -9,19 +8,15 @@ export async function GET(
   try {
     const { song } = await context.params;
     const songName = decodeURIComponent(song);
-    const filePath = path.join(process.cwd(), "data", "songs.json");
-    const fileContent = await fs.readFile(filePath, "utf-8");
-    const data = JSON.parse(fileContent);
+    const db = await getSongsDb();
 
-    const songData = data.songs?.[songName];
+    const songData = db.songs[songName];
 
     if (!songData) {
       return new NextResponse("song not found", { status: 404 });
     }
 
-    const links = songData.links || [];
-
-    return NextResponse.json(links);
+    return NextResponse.json(songData.links);
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("failed to get song:", error.message);
