@@ -1,7 +1,19 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { validateAdminPassword } from "@/middleware/auth";
 
-export async function POST() {
+export async function POST(req: Request) {
+  const authResult = validateAdminPassword(req);
+  if (!authResult.isValid) {
+    return new Response(
+      JSON.stringify({ message: authResult.error || "Unauthorized" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
   try {
     const filePath = path.resolve(process.cwd(), "data/songs.json");
 
