@@ -8,8 +8,14 @@ export async function convertPptxToPdf(pptxPath: string, outputDir: string) {
 
     console.log(`converting ${path.basename(pptxPath)} to pdf...`);
 
-    const convertToPdfCmd = `soffice --headless --convert-to pdf --outdir "${outputDir}" "${pptxPath}"`;
-    await execCmd(convertToPdfCmd);
+    await execCmd("soffice", [
+      "--headless",
+      "--convert-to",
+      "pdf",
+      "--outdir",
+      outputDir,
+      pptxPath,
+    ]);
 
     console.log(`pdf generated: ${pdfPath}`);
     return pdfPath;

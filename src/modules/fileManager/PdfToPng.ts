@@ -17,9 +17,7 @@ export async function convertPdfToPng(
     }
 
     const outputPrefix = path.join(outputDir, prefix);
-    const pdfToPngCmd = `pdftoppm -png "${pdfPath}" "${outputPrefix}"`;
-
-    await execCmd(pdfToPngCmd);
+    await execCmd("pdftoppm", ["-png", pdfPath, outputPrefix]);
 
     const pngFiles = fs
       .readdirSync(outputDir)
