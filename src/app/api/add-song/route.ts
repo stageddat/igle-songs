@@ -29,11 +29,12 @@ async function ensureDirectoryExists(dirPath: string) {
   }
 }
 
-// limpiar nombres
+// limpiar nombres. "_" se reserva para separar dos canciones en un mismo
+// pptx (ver filterSongs), asi que no puede aparecer en el titulo
 function sanitizeTitle(title: string): string {
   return title
     .replace(/[<>:"/\\|?*]/g, "")
-    .replace(/\s+/g, "_")
+    .replace(/[_\s]+/g, " ")
     .trim();
 }
 
