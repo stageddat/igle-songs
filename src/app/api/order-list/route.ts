@@ -1,6 +1,5 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { validateAdminPassword } from "@/middleware/auth";
+import { updateSongsDb } from "@/modules/db/songsDb";
 
 export async function POST(req: Request) {
   const authResult = validateAdminPassword(req);
@@ -15,31 +14,25 @@ export async function POST(req: Request) {
   }
 
   try {
-    const filePath = path.resolve(process.cwd(), "data/songs.json");
+    const newJson = await updateSongsDb("chore(songs): sort by pinyin", (db) => {
+      // ordenar por pinyin
+      const keys = Object.keys(db.songs);
+      const sortedKeys = [...keys].sort((a, b) =>
+        a.localeCompare(b, "zh-Hans-u-co-pinyin")
+      );
 
-    const data = await fs.readFile(filePath, "utf-8");
-    const json = JSON.parse(data) as {
-      updateDate: string;
-      songs: Record<string, unknown>;
-    };
+      // si ya está ordenado no hace falta commit
+      if (sortedKeys.every((key, i) => key === keys[i])) {
+        return null;
+      }
 
-    // ordenar por pinyin
-    const sortedKeys = Object.keys(json.songs).sort((a, b) =>
-      a.localeCompare(b, "zh-Hans-u-co-pinyin")
-    );
+      const sortedSongs: typeof db.songs = {};
+      for (const key of sortedKeys) {
+        sortedSongs[key] = db.songs[key];
+      }
 
-    const sortedSongs: Record<string, unknown> = {};
-    for (const key of sortedKeys) {
-      sortedSongs[key] = json.songs[key];
-    }
-
-    // rescribir base de datos
-    const newJson = {
-      ...json,
-      songs: sortedSongs,
-    };
-
-    await fs.writeFile(filePath, JSON.stringify(newJson, null, 2), "utf-8");
+      return { ...db, songs: sortedSongs };
+    });
 
     return new Response(JSON.stringify(newJson), {
       status: 200,
@@ -50,7 +43,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("error in /order.list", error);
     return new Response(
-      JSON.stringify({ error: "failed to read or write songs.json" }),
+      JSON.stringify({ error: "failed to read or write songs db" }),
       {
         status: 500,
         headers: {

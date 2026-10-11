@@ -13,7 +13,17 @@ R2_ACCESS_KEY_ID=...
 R2_SECRET_ACCESS_KEY=...
 R2_BUCKET_NAME=...
 R2_PUBLIC_URL=https://iglesia-storage.stageddat.dev
+GITHUB_TOKEN=...
+GITHUB_DB_REPO=stageddat/igle-songs
 ```
+
+## Base de datos
+
+La lista de canciones es `data/songs.json` de este repo (rama `main`). La app no lo lee del disco: lo lee y escribe con la API de GitHub, así que cada canción añadida es un commit y cualquier instancia de la app ve los mismos datos. Haz `git pull` antes de push, porque la app también hace commits.
+
+- `GITHUB_TOKEN`: fine-grained token con acceso solo a este repo y permiso **Contents: Read and write**.
+- Si dos escrituras chocan, GitHub rechaza la segunda y la app la reintenta sobre la versión nueva.
+- La app nunca escribe un JSON que haya perdido canciones respecto al anterior.
 
 ## Despliegue con Docker
 
@@ -26,7 +36,7 @@ sudo chown -R 1000:1000 data
 docker compose up -d --build
 ```
 
-La web queda en `http://localhost:9999`. La carpeta `data/` (con `songs.json` y los archivos en proceso) se monta como volumen, así que no se pierde al reconstruir el contenedor.
+La web queda en `http://localhost:9999`. La carpeta `data/` (archivos en proceso) se monta como volumen, así que no se pierde al reconstruir el contenedor.
 
 Comandos útiles:
 

@@ -8,5 +8,5 @@ services:
     ports:
       - "9999:9999"
     volumes:
-      # songs.json y archivos en proceso (pptxs, pdfs, pngs) persisten fuera del contenedor
+      # archivos en proceso (pptxs, pdfs, pngs) persisten fuera del contenedor
       - ./data:/app/data:Z
