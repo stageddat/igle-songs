@@ -6,7 +6,8 @@ services:
     restart: unless-stopped
     env_file: .env
     ports:
-      - "9999:9999"
+      # solo en local: el proxy (caddy) la publica; con 0.0.0.0 docker se salta el firewall
+      - "127.0.0.1:9999:9999"
     volumes:
       # archivos en proceso (pptxs, pdfs, pngs) persisten fuera del contenedor
       - ./data:/app/data:Z
