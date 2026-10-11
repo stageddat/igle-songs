@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { safeJoin } from "@/modules/shared/safePath";
 
 export async function GET(
   req: Request,
@@ -8,7 +9,10 @@ export async function GET(
 ) {
   const { song, image } = await context.params;
 
-  const imagePath = path.join(process.cwd(), "data/pngs", song, image);
+  const imagePath = safeJoin(path.join(process.cwd(), "data/pngs"), song, image);
+  if (!imagePath) {
+    return NextResponse.json({ error: "Invalid path" }, { status: 400 });
+  }
 
   try {
     const imageData = await fs.readFile(imagePath);

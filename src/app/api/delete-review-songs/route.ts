@@ -1,5 +1,6 @@
 import { deleteReviewSong } from "@/modules/fileManager/deleteReviewSong";
 import { validateAdminPassword } from "@/middleware/auth";
+import { isSafeName } from "@/modules/shared/safePath";
 
 export async function DELETE(req: Request) {
   try {
@@ -20,9 +21,9 @@ export async function DELETE(req: Request) {
     const body = await req.json();
     const { song } = body;
 
-    if (!song) {
+    if (!isSafeName(song)) {
       return new Response(
-        JSON.stringify({ message: "song name is required" }),
+        JSON.stringify({ message: "valid song name is required" }),
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
