@@ -16,7 +16,8 @@ export async function convertPdfToPng(
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    const outputPrefix = path.join(outputDir, prefix);
+    // turbopackIgnore: ruta de runtime, evita que el build incluya todo el proyecto
+    const outputPrefix = path.join(/*turbopackIgnore: true*/ outputDir, prefix);
     await execCmd("pdftoppm", ["-png", pdfPath, outputPrefix]);
 
     const pngFiles = fs
