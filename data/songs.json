@@ -1,5 +1,5 @@
 {
-  "updateDate": "2026-08-16T16:56:43.659Z",
+  "updateDate": "2026-10-11T23:17:26.453Z",
   "songs": {
     "阿爸父": {
       "links": [
@@ -3701,6 +3701,13 @@
         "https://iglesia-storage.stageddat.dev/%E7%94%9F%E5%91%BD%E6%B4%BB%E6%B0%B4-2.png"
       ],
       "uploadDate": "2026-08-16T16:56:43.659Z"
+    },
+    "应当单单仰望主-2": {
+      "links": [
+        "https://iglesia-storage.stageddat.dev/%E5%BA%94%E5%BD%93%E5%8D%95%E5%8D%95%E4%BB%B0%E6%9C%9B%E4%B8%BB-2-0.png",
+        "https://iglesia-storage.stageddat.dev/%E5%BA%94%E5%BD%93%E5%8D%95%E5%8D%95%E4%BB%B0%E6%9C%9B%E4%B8%BB-2-1.png"
+      ],
+      "uploadDate": "2026-10-11T23:17:26.453Z"
     }
   }
 }
