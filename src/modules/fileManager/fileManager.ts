@@ -11,6 +11,8 @@ const pdfsDir = path.join(process.cwd(), "/data/pdfs");
 const pngsDir = path.join(process.cwd(), "/data/pngs");
 
 const CONCURRENCY_LIMIT = 3;
+// soffice no admite varias instancias a la vez con el mismo perfil de usuario
+const PPTX_CONCURRENCY_LIMIT = 1;
 
 async function runInBatches<T>(
   items: T[],
@@ -41,7 +43,7 @@ export async function processFiles() {
   // procesar todos los pptx disponibles
   const pptxFiles = await fs.readdir(pptxsDir);
 
-  await runInBatches(pptxFiles, CONCURRENCY_LIMIT, async (file) => {
+  await runInBatches(pptxFiles, PPTX_CONCURRENCY_LIMIT, async (file) => {
     if (await isDiskAlmostFull()) {
       console.warn("espace almost full. waiting...");
       return;
