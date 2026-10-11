@@ -53,8 +53,6 @@ export default function SongPage() {
 				.then((res) => res.json())
 				.then(setImages)
 				.catch(() => toast.error(t("loadImagesError")))
-		} else {
-			setImages([])
 		}
 	}, [selectedSong, t])
 
@@ -183,7 +181,7 @@ export default function SongPage() {
 	const imageGalleryComponent = (
 		<ImageGallery
 			selectedSong={selectedSong}
-			images={images}
+			images={selectedSong ? images : []}
 			onImageClick={copyToClipboard}
 			getImageUrl={getSmartImageUrl}
 			onImageError={handleImageError}
