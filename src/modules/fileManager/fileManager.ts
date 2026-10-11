@@ -38,7 +38,35 @@ async function runInBatches<T>(
   await Promise.all(workers);
 }
 
-export async function processFiles() {
+// estado compartido entre rutas (globalThis por si cada ruta carga su copia del modulo)
+const processingState = globalThis as typeof globalThis & {
+  __processFilesRun?: Promise<void> | null;
+  __processFilesRerun?: boolean;
+};
+
+// lanzar el procesado; si ya hay uno en marcha, repetirlo al terminar para
+// recoger los archivos subidos mientras tanto (nunca dos procesados a la vez)
+export function processFiles(): Promise<void> {
+  if (processingState.__processFilesRun) {
+    processingState.__processFilesRerun = true;
+    return processingState.__processFilesRun;
+  }
+
+  processingState.__processFilesRun = (async () => {
+    try {
+      do {
+        processingState.__processFilesRerun = false;
+        await runProcessFiles();
+      } while (processingState.__processFilesRerun);
+    } finally {
+      processingState.__processFilesRun = null;
+    }
+  })();
+
+  return processingState.__processFilesRun;
+}
+
+async function runProcessFiles() {
   await checkDir();
   console.log("processing files...");
 

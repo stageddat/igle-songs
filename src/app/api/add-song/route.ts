@@ -8,8 +8,6 @@ import path from "node:path";
 const pptxsDir = path.join(process.cwd(), "/data/pptxs");
 const pngsDir = path.join(process.cwd(), "/data/pngs");
 
-let isProcessing = false;
-
 function isValidFile(file: File, mode: "pptx" | "images"): boolean {
   if (mode === "pptx") {
     return (
@@ -142,16 +140,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!isProcessing) {
-      isProcessing = true;
-      processFiles()
-        .catch((error) => {
-          console.error("Error in processFiles:", error);
-        })
-        .finally(() => {
-          isProcessing = false;
-        });
-    }
+    // si ya hay un procesado en marcha, se repite al terminar
+    processFiles().catch((error) => {
+      console.error("Error in processFiles:", error);
+    });
 
     return NextResponse.json({
       message: "Files uploaded successfully and processing started",
