@@ -1,14 +1,14 @@
 import { promises as fs } from "fs";
 import path from "path";
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
     const filePath = path.resolve(process.cwd(), "data/songs.json");
 
     const data = await fs.readFile(filePath, "utf-8");
     const json = JSON.parse(data) as {
       updateDate: string;
-      songs: Record<string, any>;
+      songs: Record<string, unknown>;
     };
 
     // ordenar por pinyin
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       a.localeCompare(b, "zh-Hans-u-co-pinyin")
     );
 
-    const sortedSongs: Record<string, any> = {};
+    const sortedSongs: Record<string, unknown> = {};
     for (const key of sortedKeys) {
       sortedSongs[key] = json.songs[key];
     }

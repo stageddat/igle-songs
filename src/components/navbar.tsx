@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
+import Link from "next/link";
 import {
 	NavigationMenu,
 	NavigationMenuLink,
@@ -134,18 +135,18 @@ export default function Navbar() {
 									className="w-full justify-start text-zinc-100 hover:bg-zinc-800 hover:text-zinc-50 rounded-md"
 									asChild
 								>
-									<a href="/" onClick={() => setIsSheetOpen(false)}>
+									<Link href="/" onClick={() => setIsSheetOpen(false)}>
 										{t("navSong")}
-									</a>
+									</Link>
 								</Button>
 								<Button
 									variant="ghost"
 									className="w-full justify-start text-zinc-100 hover:bg-zinc-800 hover:text-zinc-50 rounded-md"
 									asChild
 								>
-									<a href="/review" onClick={() => setIsSheetOpen(false)}>
+									<Link href="/review" onClick={() => setIsSheetOpen(false)}>
 										{t("navReview")}
-									</a>
+									</Link>
 								</Button>
 							</div>
 
