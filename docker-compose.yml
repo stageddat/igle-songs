@@ -1,0 +1,12 @@
+services:
+  igle:
+    build: .
+    image: igle-songs
+    container_name: igle
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "9999:9999"
+    volumes:
+      # songs.json y archivos en proceso (pptxs, pdfs, pngs) persisten fuera del contenedor
+      - ./data:/app/data:Z
