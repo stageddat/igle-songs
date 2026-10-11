@@ -3,6 +3,7 @@ import path from "node:path";
 import { r2 } from "@/r2";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
+import { isSafeName, safeJoin } from "@/modules/shared/safePath";
 
 dotenv.config();
 
@@ -11,7 +12,10 @@ export async function uploadSlides(songName: string, slides: string[]) {
   const songsDbContent = await fs.readFile(songsDbPath, "utf-8");
   const songsDb = JSON.parse(songsDbContent);
   const pngsDir = path.join(process.cwd(), "/data/pngs");
-  const songDir = path.join(pngsDir, songName);
+  const songDir = safeJoin(pngsDir, songName);
+  if (!songDir || !slides.every(isSafeName)) {
+    throw new Error(`invalid song or slide name: ${songName}`);
+  }
   const files = await fs.readdir(songDir);
   const pngFiles = files.filter((file) => file.endsWith(".png"));
 

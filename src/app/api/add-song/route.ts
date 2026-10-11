@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { processFiles } from "@/modules/fileManager/fileManager";
 import { validateAdminPassword } from "@/middleware/auth";
+import { isSafeName } from "@/modules/shared/safePath";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -94,6 +95,9 @@ export async function POST(request: NextRequest) {
     await ensureDirectoryExists(pngsDir);
 
     const sanitizedTitle = sanitizeTitle(title);
+    if (!isSafeName(sanitizedTitle)) {
+      return NextResponse.json({ message: "Invalid title" }, { status: 400 });
+    }
 
     if (mode === "pptx") {
       const file = files[0];

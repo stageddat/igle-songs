@@ -1,9 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { safeJoin } from "@/modules/shared/safePath";
 
 export async function deleteReviewSong(songName: string) {
   const pngsDir = path.join(process.cwd(), "/data/pngs");
-  const songDir = path.join(pngsDir, songName);
+  const songDir = safeJoin(pngsDir, songName);
+  if (!songDir) {
+    throw new Error(`invalid song name "${songName}"`);
+  }
 
   try {
     await fs.access(songDir);
