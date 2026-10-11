@@ -1,3 +1,12 @@
+import { createHash, timingSafeEqual } from "node:crypto";
+
+// comparar en tiempo constante (hash para igualar longitudes)
+function safeCompare(a: string, b: string) {
+  const hashA = createHash("sha256").update(a).digest();
+  const hashB = createHash("sha256").update(b).digest();
+  return timingSafeEqual(hashA, hashB);
+}
+
 export function validateAdminPassword(req: Request) {
   try {
     const authHeader = req.headers.get("Authorization");
@@ -20,7 +29,7 @@ export function validateAdminPassword(req: Request) {
       };
     }
 
-    if (password !== masterPassword) {
+    if (!safeCompare(password, masterPassword)) {
       return {
         isValid: false,
         error: "invalid password",
